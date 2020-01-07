@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.nrsc.mybatis.mapper.TUserMapper">
 
-	<select id="selectByPrimaryKey" resultType="com.nrsc.mybatis.domain.TUser"	parameterType="java.lang.Integer">
+    <select id="selectByPrimaryKey" resultType="com.nrsc.mybatis.domain.TUser" parameterType="java.lang.Integer">
 		select
 			id, 
 			user_name , 
@@ -15,5 +15,23 @@
 		from t_user
 		where id = #{id,jdbcType=INTEGER}
 	</select>
+
+
+    <select id="selectListByIdList" resultType="com.nrsc.mybatis.domain.TUser">
+        select
+        id,
+        user_name ,
+        real_name ,
+        sex,
+        mobile,
+        email,
+        note,
+        position_id positionId
+        from t_user
+        where id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </select>
 
 </mapper>
