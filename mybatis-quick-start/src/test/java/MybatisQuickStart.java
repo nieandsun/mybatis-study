@@ -60,9 +60,11 @@ public class MybatisQuickStart {
         TUserMapper mapper = sqlSession.getMapper(TUserMapper.class);
         // 4.执行查询语句并返回结果
         TUser user = mapper.selectByPrimaryKey(1);
+        List<TUser> tUsers = mapper.selectListByIdList(Arrays.asList(1, 2, 3));
         //5.关闭session
         sqlSession.close();
         log.info("user222:" + user);
+        log.info("user222:" + tUsers);
     }
 
 
