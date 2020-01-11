@@ -5,11 +5,11 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import java.io.IOException;
  * @date : 2020/1/11
  * Description :
  */
+@EnableTransactionManagement//开启事务
 @MapperScan(basePackages = "com.nrsc.mybatis.mapper") //指定Mapper接口的地址
 @ComponentScan("com.nrsc.mybatis")
 public class SelfDBConfig {
