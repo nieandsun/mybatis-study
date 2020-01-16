@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nrsc.study.mapper.study.TUserMapper">
+    <resultMap id="BaseResultMap" type="com.nrsc.study.domian.TUser">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="real_name" jdbcType="VARCHAR" property="realName" />
+        <result column="sex" jdbcType="TINYINT" property="sex" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="note" jdbcType="VARCHAR" property="note" />
+        <result column="position_id" jdbcType="INTEGER" property="positionId" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_name, real_name, sex, mobile, email, note, position_id
+  </sql>
+
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select <include refid="Base_Column_List"/>
+		from t_user
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+</mapper>

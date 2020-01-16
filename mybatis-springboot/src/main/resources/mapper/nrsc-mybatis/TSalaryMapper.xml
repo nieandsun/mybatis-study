@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nrsc.study.mapper.nrsc.TSalaryMapper">
+
+    <resultMap id="BaseResultMap" type="com.nrsc.study.domian.TSalary">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="base_salary" jdbcType="DECIMAL" property="baseSalary"/>
+        <result column="post_salary" jdbcType="DECIMAL" property="postSalary"/>
+        <result column="meal_allowance" jdbcType="DECIMAL" property="mealAllowance"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, user_name, base_salary, post_salary, meal_allowance
+    </sql>
+
+    <select id="selectByUserName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_salary where user_name = #{userName,jdbcType=VARCHAR}
+    </select>
+
+</mapper>
