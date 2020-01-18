@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nrsc.mybatis.mapper.TUserMapper">
+    <resultMap id="BaseResultMap" type="com.nrsc.mybatis.domian.TUser">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="real_name" jdbcType="VARCHAR" property="realName"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="note" jdbcType="VARCHAR" property="note"/>
+        <result column="position_id" jdbcType="INTEGER" property="positionId"/>
+    </resultMap>
+    <!--++++++++++++++++++++++++++++++++++++++1对1非懒加载++++++++++++++++++++++++++++++++++++++++-->
+    <sql id="User_Salary_SA">
+         ts.id as SA_id , ts.user_name as SA_user_name, ts.base_salary as SA_base_salary,
+         ts.post_salary as SA_post_salary, ts.meal_allowance as SA_meal_allowance
+    </sql>
+
+    <!--可以通过extends属性来继承BaseResultMap的属性，简化配置-->
+    <resultMap id="UserAndSalaryMap" extends="BaseResultMap"
+               type="com.nrsc.mybatis.vo.UserAndSalaryVO">
+        <!--注意:
+            1. 下面的property其实是UserAndSalaryVO中TSalary属性的变量名，必填
+            2. columnPrefix表示对下面的column对应的值加一个前缀
+        -->
+        <association property="salary" columnPrefix="SA_"
+                     javaType="com.nrsc.mybatis.domian.TSalary">
+            <id column="id" property="id"/>
+            <result column="user_name" property="userName"/>
+            <result column="base_salary" property="baseSalary"/>
+            <result column="post_salary" property="postSalary"/>
+            <result column="meal_allowance" property="mealAllowance"/>
+        </association>
+    </resultMap>
+
+    <!--非懒加载的方式-->
+    <select id="selectUserAndSalaryByPrimaryKey" resultMap="UserAndSalaryMap">
+        select tu.* ,
+        <include refid="User_Salary_SA"/>
+        from t_user tu left join t_salary ts
+        on tu.user_name = ts.user_name
+        where tu.id = #{id,jdbcType=BIGINT}
+    </select>
+    <!--++++++++++++++++++++++++++++++++++++++1对1非懒加载++++++++++++++++++++++++++++++++++++++++-->
+
+    <!--++++++++++++++++++++++++++++++++++++++1对1懒加载++++++++++++++++++++++++++++++++++++++++-->
+    <resultMap id="UserAndSalaryMapLazy" extends="BaseResultMap"
+               type="com.nrsc.mybatis.vo.UserAndSalaryVO">
+        <!--注意:
+            1.下面的property其实是UserAndSalaryVO中TSalary属性的变量名，必填
+            2.column指的是select对应的sql语句需要的参数，
+            需要格外注意的是这个值是本sql语句的列名，这里由于两个表的列名都为user_name,可能看不出来，
+            假如t_user表里叫name，而t_salary里叫user_name,这里应该填name
+        -->
+        <association property="salary"
+                     javaType="com.nrsc.mybatis.domian.TSalary"
+                     column="user_name"
+                     fetchType="lazy"
+                     select="com.nrsc.mybatis.mapper.TSalaryMapper.selectByUserName">
+        </association>
+    </resultMap>
+
+    <select id="getAllUserInfo" resultMap="UserAndSalaryMapLazy">
+        select  * from t_user
+    </select>
+    <!--++++++++++++++++++++++++++++++++++++++1对1懒加载++++++++++++++++++++++++++++++++++++++++-->
+
+
+    <!--++++++++++++++++++++++++++++++++++++++1对多非懒加载 ++++++++++++++++++++++++++++++++++++++++-->
+    <resultMap id="UserAndJobHistoryMap" type="com.nrsc.mybatis.vo.UserAndJobHistoryVO"
+               extends="BaseResultMap">
+        <!--
+            注意: 1 下面的property其实是UserAndJobHistoryVO中TJobHistory属性的变量名，必填
+        -->
+        <collection columnPrefix="TH_" property="jobHistoryList"
+                    ofType="com.nrsc.mybatis.domian.TJobHistory">
+            <id column="id" jdbcType="BIGINT" property="id"/>
+            <result column="user_id" jdbcType="BIGINT" property="userId"/>
+            <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
+            <result column="years" jdbcType="INTEGER" property="years"/>
+            <result column="title" jdbcType="VARCHAR" property="title"/>
+        </collection>
+    </resultMap>
+
+    <sql id="JobHistorySQL_TH">
+        tjh.id TH_id, tjh.user_id TH_user_id , tjh.company_name TH_company_name,
+        tjh.years TH_years, tjh.title TH_title
+    </sql>
+    <select id="getUserAndJobsInfo" resultMap="UserAndJobHistoryMap">
+        select tu.*,
+        <include refid="JobHistorySQL_TH"/>
+        from t_user tu , t_job_history tjh
+        where tu.id = tjh.user_id
+        and tjh.user_id = #{userId,jdbcType=BIGINT}
+    </select>
+    <!--++++++++++++++++++++++++++++++++++++++1对多非懒加载 ++++++++++++++++++++++++++++++++++++++++-->
+
+    <!--++++++++++++++++++++++++++++++++++++++1对多懒加载 ++++++++++++++++++++++++++++++++++++++++-->
+    <resultMap id="UserAndJobHistoryLazyMap" type="com.nrsc.mybatis.vo.UserAndJobHistoryVO">
+        <!--
+        注意：
+        column指的是select对应的sql语句需要的参数，需要格外注意的是这个值是本sql语句的列名
+        -->
+        <collection property="jobHistoryList" column="id"
+                    select="com.nrsc.mybatis.mapper.TJobHistoryMapper.selectByUserId"
+                    fetchType="lazy">
+        </collection>
+    </resultMap>
+
+    <select id="getUserAndJobsInfoLazy" resultMap="UserAndJobHistoryLazyMap">
+        select * from t_user where id = #{userId,jdbcType=VARCHAR}
+    </select>
+
+
+    <!--++++++++++++++++++++++++++++++++++++++1对多懒加载 ++++++++++++++++++++++++++++++++++++++++-->
+</mapper>

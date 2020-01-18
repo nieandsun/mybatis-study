@@ -1,0 +1,44 @@
+server:
+  port: 9092
+
+# 打印sql语句
+logging:
+  level:
+    com.nrsc.mybatis.mapper : debug
+# 数据库1对应的数据源
+spring:
+#  懒加载情况下报“No serializer found for class org.apache.ibatis.executor.loader.javassist.JavassistProxyFactory$Enha。。”
+  # 解决方法
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/mybatis-study?characterEncoding=utf-8&serverTimezone=GMT&useSSL=false
+    # 配置内容详解可以看Druid对应的github,这里不过多解释
+    # https://github.com/alibaba/druid/wiki/DruidDataSource%E9%85%8D%E7%BD%AE%E5%B1%9E%E6%80%A7%E5%88%97%E8%A1%A8
+    filters: stat
+    maxActive: 30
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+    removeAbandoned: true
+    removeAbandonedTimeout: 180
+mybatis:
+  configuration:
+    #该值默认就是false，所以可以不配
+    aggressive-lazy-loading: false
+    #该属性默认为false，如果配置了true，相当于开启了全局懒加载
+    #当然我们也可以不管该属性，而mapper.xml中的特定标签里通过fetchType="lazy" 来指定某个查询使用懒加载
+    #lazy-loading-enabled: true

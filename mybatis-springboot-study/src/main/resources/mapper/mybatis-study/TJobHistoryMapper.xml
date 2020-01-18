@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nrsc.mybatis.mapper.TJobHistoryMapper">
+    <resultMap id="BaseResultMap" type="com.nrsc.mybatis.domian.TJobHistory">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
+        <result column="years" jdbcType="INTEGER" property="years"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id, company_name, years, title
+  </sql>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_job_history
+        where user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+</mapper>
